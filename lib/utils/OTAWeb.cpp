@@ -1,7 +1,8 @@
 #include "OTAWeb.h"
 #include <WiFi.h>
 #include <Update.h>
-#include "webInterface.h"
+#include "firmwareWeb.h"
+#include "serialWeb.h"
 
 WebServer server(80);
 

@@ -1,14 +1,14 @@
 #include "blinkLed.h"
 
-void blinkLed_init(void){
-    pinMode(LED_2, 1);
-}
+void blinkLedCtrl(unsigned short ledPin, unsigned short msDelayTime){
+    
+    /* Init LED pin is OUTPUT */
+    pinMode(ledPin, 1);
 
-void blinkLed_ctrl(void){
-    Serial.println("HELLo");
-    digitalWrite(LED_2, 0);
-    delay(500);
+    /* Blink LED by freq = 2*msDelayTime */
+    digitalWrite(ledPin, LOW);
+    delay(msDelayTime);
 
-    digitalWrite(LED_2, 1);
-    delay(500);
+    digitalWrite(ledPin, HIGH);
+    delay(msDelayTime);
 }
