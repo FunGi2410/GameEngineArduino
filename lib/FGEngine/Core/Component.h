@@ -1,14 +1,17 @@
 #pragma once
 #include <string>
- 
+
 class GameObject; 
+
 class Component {
     protected:
-        GameObject* gameObject;
+        GameObject* gameObject{nullptr};
     public:
-        Component(GameObject* obj) : gameObject(obj) {}
+        explicit Component(GameObject* owner) : gameObject(owner) {}
         virtual ~Component() {}
 
         virtual void start() {}
         virtual void update(float deltaTime) {}
+
+        GameObject* getGameObject() const { return gameObject; }
 };
