@@ -1,31 +1,40 @@
-
-#include <Update.h>
-
 #include "serialWeb.h"
-
 #include "OTAWeb.h"
- 
-int counter = 0;
 
-String htmlPage() {
-  String page = "<!DOCTYPE html><html><head><meta charset='utf-8'>";
-  page += "<title>ESP32 Web Data</title></head><body>";
-  page += "<h1>ESP32 Data Demo</h1>";
-  page += "<p>Counter value: <span id='val'>0</span></p>";
-  
-  page += "<script>";
-  page += "setInterval(()=>{fetch('/data').then(r=>r.text()).then(t=>{";
-  page += "document.getElementById('val').innerText=t;});},1000);";
-  page += "</script>";
-  
-  page += "</body></html>";
-  return page;
+// Tạo server và WebSerial
+// AsyncWebServer server(80);
+AsyncWebSerial webSerial;
+
+void serialWebInit() {
+
+  // Khởi tạo WebSerial
+  webSerial.begin(&server);
+
+  // Đăng ký hàm callback khi nhận dữ liệu từ web
+  webSerial.onMessage([](uint8_t *data, size_t len) {
+    String msg;
+    for (size_t i = 0; i < len; i++) {
+      msg += char(data[i]);
+    }
+    Serial.println("Nhận từ Web: " + msg);
+    webSerial.println("ESP32 đã nhận: " + msg);
+  });
+
+  server.begin();
+
+  webSerial.println("WebSerial đã sẵn sàng!");
 }
 
-void serialData() {
-  server.send(200, "text/plain", (Update.hasError()) ? "Serial Data" : String(counter));
-}
+void serialWebPrint(){
+  static unsigned long last = 0;
+  static int counter = 0;
 
-void serialWebRun() {    
-    server.on("/update", HTTP_POST, serialData);
+  if (millis() - last > 2000) {
+    last = millis();
+    counter++;
+    webSerial.println("Counter = " + String(counter));
+  }
+
+  // Một số bản thư viện yêu cầu gọi loop()
+  webSerial.loop();
 }

@@ -1,7 +1,8 @@
 #pragma once
-#include <WebServer.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
-extern WebServer server;
+extern AsyncWebServer server;
 
 void setupOTA(const char* ssid, const char* password);
 void runOTA();

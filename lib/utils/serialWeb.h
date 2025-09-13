@@ -1,3 +1,7 @@
-extern int counter;
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
+#include <AsyncWebSerial.h>
 
-void serialWebRun();
+void serialWebInit();
+void serialWebPrint();
