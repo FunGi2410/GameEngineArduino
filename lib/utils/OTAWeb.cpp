@@ -1,51 +1,18 @@
-#include "OTAWeb.h"
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <Update.h>
+#include "firmwareWeb.h"  
 
-WebServer server(80);
+AsyncWebServer server(80);
 
-const char* uploadForm = R"rawliteral(
-<!DOCTYPE html>
-<html>
-  <body>
-    <h1>FunGi OTA</h1>
-    <form method='POST' action='/update' enctype='multipart/form-data'>
-      <input type='file' name='update'>
-      <input type='submit' value='Nạp code vào!'>
-    </form>
-  </body>
-</html>
-)rawliteral";
-
-void handleRoot() {
-  server.send(200, "text/html", uploadForm);
+void handleRoot(AsyncWebServerRequest *request) {
+  request->send(200, "text/html", uploadForm);
 }
 
-void upLoad() {
-  HTTPUpload& upload = server.upload();
-
-  if (upload.status == UPLOAD_FILE_START) {
-    Serial.printf("Update: %s\n", upload.filename.c_str());
-    if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
-      Update.printError(Serial);
-    }
-  } else if (upload.status == UPLOAD_FILE_WRITE) {
-    if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-      Update.printError(Serial);
-    }
-  } else if (upload.status == UPLOAD_FILE_END) {
-    if (Update.end(true)) {
-      Serial.printf("Update Success: %u bytes\nRebooting...\n", upload.totalSize);
-    } else {
-      Update.printError(Serial);
-    }
-  }
-  yield();
-}
-
-void updateComplete() {
-  server.sendHeader("Connection", "close");
-  server.send(200, "text/plain", (Update.hasError()) ? "Update Failed!" : "Update Success! Rebooting...");
+void updateComplete(AsyncWebServerRequest *request) {
+  bool hasError = Update.hasError();
+  request->send(200, "text/plain", hasError ? "Update Failed!" : "Update Success! Rebooting...");
   delay(500);
   ESP.restart();
 }
@@ -62,10 +29,30 @@ void setupOTA(const char* ssid, const char* password) {
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, handleRoot);
-  server.on("/update", HTTP_POST, updateComplete, upLoad);
-  server.begin();
-}
 
-void runOTA() {
-  server.handleClient();
+  server.on(
+    "/update",
+    HTTP_POST,
+    updateComplete,
+    [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+      if (!index) {
+        Serial.printf("Update Start: %s\n", filename.c_str());
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+          Update.printError(Serial);
+        }
+      }
+      if (Update.write(data, len) != len) {
+        Update.printError(Serial);
+      }
+      if (final) {
+        if (Update.end(true)) {
+          Serial.printf("Update Success: %u bytes\nRebooting...\n", index + len);
+        } else {
+          Update.printError(Serial);
+        }
+      }
+    }
+  );
+
+  server.begin();
 }
