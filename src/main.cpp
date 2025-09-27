@@ -1,10 +1,8 @@
 #include <Arduino.h>
 #include "OTAWeb.h"
 #include "FuMDNS.h"
-
-#include "blinkLed.h"
-
-#include "serialWeb.h"
+#include "SerialWeb.h"
+#include "../lib/FGEngine/Render/TFTSetting.h"
 
 const char* ssid = "Nha Tro 7 Treo";
 const char* password = "02022025";
@@ -18,5 +16,4 @@ void setup() {
 }
 
 void loop() {
-  runOTA();
 }
