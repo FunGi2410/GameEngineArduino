@@ -1,29 +1,46 @@
-#include "TFTSetting.h"
 
-TFT_eSPI tft = TFT_eSPI();  // Tạo đối tượng TFT
+#include <TFT_eSPI.h> // Hardware-specific library
+#include <SPI.h>
 
-void init() {
-  tft.init();               
-  tft.setRotation(1);       
-  tft.fillScreen(TFT_BLACK);  
+#include "User_Setup_ST7735.h"
 
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);  
-  tft.drawString("Hello ESP32!", 10, 10, 2);
+TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 
-  tft.fillRect(20, 40, 60, 30, TFT_RED);
+void setup_tft7735(void) {
+  tft.init();
 
-  // player = tft.drawRect(pos, scale, color);
-  // player = tft.drawRect(pos);
-  // player.setPos(pos)
-
-  
-  tft.fillCircle(60, 120, 20, TFT_GREEN);
+  tft.setRotation(1);
 }
 
-void run() {
-    
-  tft.fillScreen(TFT_BLUE);
-  delay(1000);
+void run_tft7735() {
+
   tft.fillScreen(TFT_BLACK);
-  delay(1000);
+
+  // Draw some random filled ellipses
+  for (int i = 0; i < 20; i++)
+  {
+    int rx = random(40);
+    int ry = random(40);
+    int x = rx + random(160 - rx - rx);
+    int y = ry + random(128 - ry - ry);
+    tft.fillEllipse(x, y, rx, ry, random(0xFFFF));
+  }
+
+  delay(2000);
+  tft.fillScreen(TFT_BLACK);
+
+  // Draw some random outline ellipses
+  for (int i = 0; i < 20; i++)
+  {
+    int rx = random(40);
+    int ry = random(40);
+    int x = rx + random(160 - rx - rx);
+    int y = ry + random(128 - ry - ry);
+    tft.drawEllipse(x, y, rx, ry, random(0xFFFF));
+  }
+
+  delay(2000);
 }
+
+
+

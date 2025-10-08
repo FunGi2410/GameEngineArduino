@@ -13,7 +13,10 @@ void setup() {
   setupOTA(ssid, password);
   serialWebInit();
   setupHost();
+
+  setup_tft7735();
 }
 
 void loop() {
+  run_tft7735();
 }
