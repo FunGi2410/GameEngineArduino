@@ -42,5 +42,16 @@ void run_tft7735() {
   delay(2000);
 }
 
+/*
+player.addComponent(SriteRenderer); => circular (default)
+SriteRenderer 
+  => trf.draw('circular')
+  => trf.setPos(circular)
+  => trf.setColor(circular)
+
+
+
+*/
+
 
 
