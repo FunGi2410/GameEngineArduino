@@ -1,45 +1,55 @@
-
-#include <TFT_eSPI.h> // Hardware-specific library
+#include <TFT_eSPI.h> 
 #include <SPI.h>
 
-#include "User_Setup_ST7735.h"
+#include "TFTSetting.h"
+#include "D:\_ESP32_TFT_Monitor\2.GameEngineArduino\GameEngineArduino\.pio\libdeps\esp32dev\TFT_eSPI\User_Setups\Setup43_ST7735.h"
+#include "D:\_ESP32_TFT_Monitor\2.GameEngineArduino\GameEngineArduino\.pio\libdeps\esp32dev\TFT_eSPI\User_Setup_Select.h"
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+TFT_eSPI tft = TFT_eSPI();      
 
 void setup_tft7735(void) {
   tft.init();
 
-  tft.setRotation(1);
+  tft.setRotation(0);
+  
+  tft.fillScreen(TFT_BLACK);
 }
 
-void run_tft7735() {
+void Player :: addComponent(){
 
-  tft.fillScreen(TFT_BLACK);
-
-  // Draw some random filled ellipses
-  for (int i = 0; i < 20; i++)
+  switch (shape)
   {
-    int rx = random(40);
-    int ry = random(40);
-    int x = rx + random(160 - rx - rx);
-    int y = ry + random(128 - ry - ry);
-    tft.fillEllipse(x, y, rx, ry, random(0xFFFF));
+    case CIRCLE:
+      tft.fillCircle( xPos+64, yPos+80, radius, color );
+      break;
+    
+    case RECTANGLE:
+      tft.fillRect( xPos+64, yPos+80, (int32_t)width, (int32_t)height, color );
+      break;
+
+    default:
+      tft.fillCircle( xPos+64, yPos+80, radius, color );
+      break;
   }
+}
 
-  delay(2000);
-  tft.fillScreen(TFT_BLACK);
+void Player :: setPosition(unsigned char x_pos, unsigned char y_pos){
+  xPos = x_pos;
+  yPos = y_pos;
+}
 
-  // Draw some random outline ellipses
-  for (int i = 0; i < 20; i++)
-  {
-    int rx = random(40);
-    int ry = random(40);
-    int x = rx + random(160 - rx - rx);
-    int y = ry + random(128 - ry - ry);
-    tft.drawEllipse(x, y, rx, ry, random(0xFFFF));
-  }
+void Player :: setColor(unsigned short input_color){
+  color = input_color;
+}
 
-  delay(2000);
+void Player :: setShape(unsigned char input_shape){
+  shape = input_shape;
+}
+
+void Player :: setSize(unsigned char input_width, unsigned char input_height, unsigned char input_radius, ...){
+  width = input_width;
+  height = input_height;
+  radius = input_radius;
 }
 
 
